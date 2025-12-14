@@ -1,0 +1,9 @@
+venv/
+mlruns/
+logs/
+MLOPS_PROJECT_1.egg-info/
+__pycache__/
+.DS_Store
+artifacts/
+key.json
+*.json
