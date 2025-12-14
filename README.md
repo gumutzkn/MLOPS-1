@@ -31,16 +31,16 @@ End-to-end MLOps-style project that trains a **LightGBM** model to predict hotel
                           ▼
 ┌───────────────────────────────────────────────────────────────┐
 │ training_pipeline.py                                          │
-│  1) DataIngestion  → artifacts/raw/{raw,train,test}.csv        │
-│  2) DataProcessor  → artifacts/processed/{processed_*.csv}     │
-│  3) ModelTraining  → artifacts/models/lgbm_model.pkl + MLflow  │
+│  1) DataIngestion  → artifacts/raw/{raw,train,test}.csv       │
+│  2) DataProcessor  → artifacts/processed/{processed_*.csv}    │
+│  3) ModelTraining  → artifacts/models/lgbm_model.pkl + MLflow │
 └───────────────────────────────────────────────────────────────┘
                           │
                           │ (serving downloads model if missing)
                           ▼
 ┌───────────────────────────────────────────────────────────────┐
 │ Flask app (application.py)                                    │
-│  - GET/POST / → HTML form → prediction                         │
+│  - GET/POST / → HTML form → prediction                        │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -237,6 +237,10 @@ The included `Jenkinsfile` implements:
 - train inside the container (injects a base64 service account key into `/app/key.json`)
 - push image to **GCR**
 - deploy to **Cloud Run**
+
+### Live demo (Cloud Run)
+
+- **Deployed service URL**: [ml-project (Cloud Run)](https://ml-project-945024021592.us-central1.run.app/)
 
 Expected Jenkins credentials IDs:
 
