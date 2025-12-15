@@ -114,10 +114,9 @@ class ModelTraining:
             logger.error(f"Error while evaluating the model {e}")
             raise CustomException("Failed to evaluate the model", e)
 
-    # --- KRITIK DEGISIKLIK BURADA ---
     def save_model(self, model):
         try:
-            # 1. Local Kayıt
+            # 1. Local
             os.makedirs(os.path.dirname(self.model_output_path), exist_ok=True)
             logger.info("Saving the model locally")
             joblib.dump(model, self.model_output_path)
@@ -129,7 +128,6 @@ class ModelTraining:
             storage_client = storage.Client()
             bucket = storage_client.bucket(self.bucket_name)
             
-            # GCS'de kaydedilecek yol (artifacts/models/lgbm_model.pkl -> models/lgbm_model.pkl olarak kısaltabiliriz)
             destination_blob_name = "models/lgbm_model.pkl"
             blob = bucket.blob(destination_blob_name)
             
@@ -143,31 +141,23 @@ class ModelTraining:
         
     def run(self):
         try:
-            # MLflow ayarlarını environment variable veya hardcoded olarak ayarlamayı unutma
-            # MLFLOW_TRACKING_URI Jenkinsfile'dan geliyor olmalı
-            
             with mlflow.start_run():
                 logger.info("Starting our model training pipeline")
 
                 logger.info("Starting our MLFlow experimentation")
 
-                # Artifact loglama işlemleri opsiyoneldir, dosya boyutuna göre yavaşlatabilir
-                # mlflow.log_artifact(self.train_path, artifact_path="datasets")
-                # mlflow.log_artifact(self.test_path, artifact_path="datasets")
 
                 X_train, y_train, X_test, y_test = self.load_and_split_data()
 
                 best_lgbm_model = self.train_lgbm(X_train, y_train)
                 metrics = self.evaluate_model(best_lgbm_model, X_test, y_test)
                 
-                # Hem locale kaydet hem de GCS'ye yükle
                 self.save_model(best_lgbm_model)
 
                 logger.info("Logging Params and metrics to MLFlow")
                 mlflow.log_params(best_lgbm_model.get_params())
                 mlflow.log_metrics(metrics)
                 
-                # MLflow'a da modeli artifact olarak kaydedebilirsin (Alternatif backup)
                 mlflow.sklearn.log_model(best_lgbm_model, "model")
 
                 logger.info("Model training completed successfully")

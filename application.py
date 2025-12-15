@@ -1,8 +1,7 @@
-# application.py
 import joblib
 import numpy as np
 import os
-from google.cloud import storage # <--- EKLENDI
+from google.cloud import storage
 from config.paths_config import MODEL_OUTPUT_PATH
 from flask import Flask, render_template, request
 
